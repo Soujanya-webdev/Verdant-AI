@@ -1,0 +1,315 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>VerdantAI 🌿</title>
+
+<style>
+/* ================= RESET ================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+/* ================= BODY ================= */
+body {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #0f2027, #203a43);
+  color: #fff;
+  overflow-x: hidden;
+  transition: background 1s ease;
+}
+
+/* ================= WEATHER BACKGROUNDS ================= */
+body.sunny {
+  background: linear-gradient(180deg, #ffe259, #ffa751);
+}
+
+body.rainy {
+  background: linear-gradient(180deg, #2c3e50, #4b79a1);
+}
+
+body.cloudy {
+  background: linear-gradient(180deg, #3a3a3a, #1f1f1f);
+}
+
+body.cold {
+  background: linear-gradient(180deg, #83a4d4, #b6fbff);
+}
+
+body.stormy {
+  background: linear-gradient(180deg, #0f0f0f, #1a1a1a);
+}
+
+/* ================= LANDING ================= */
+#landing {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle, #1d976c, #093028);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+#landing h1 {
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  letter-spacing: 2px;
+  text-shadow: 0 0 30px rgba(0,255,179,0.8);
+}
+
+#landing p {
+  margin-top: 1rem;
+  opacity: 0.85;
+}
+
+#startBtn {
+  margin-top: 2.5rem;
+  padding: 14px 36px;
+  border-radius: 40px;
+  border: none;
+  background: #00ffb3;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+#startBtn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 30px #00ffb3;
+}
+
+/* ================= APP ================= */
+#app {
+  display: none;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ================= PLANT ================= */
+.plant-container {
+  position: relative;
+  margin-top: 3rem;
+}
+
+.pot {
+  width: 120px;
+  height: 70px;
+  background: linear-gradient(#5c4033, #3b2f2f);
+  border-radius: 0 0 60px 60px;
+}
+
+.stem {
+  width: 6px;
+  height: 80px;
+  background: #2ecc71;
+  margin: 0 auto;
+}
+
+.leaf {
+  position: absolute;
+  width: 60px;
+  height: 30px;
+  background: linear-gradient(#2ecc71, #27ae60);
+  border-radius: 60px 60px 0 60px;
+  top: 40px;
+  animation: sway 4s ease-in-out infinite;
+}
+
+.leaf.left {
+  left: -40px;
+  transform: rotate(-25deg);
+}
+
+.leaf.right {
+  right: -40px;
+  transform: rotate(25deg) scaleX(-1);
+}
+
+/* ================= WEATHER EFFECTS ================= */
+.sunny .leaf {
+  box-shadow: 0 0 20px rgba(255,255,255,0.8);
+}
+
+.cloudy .leaf {
+  filter: brightness(0.6);
+}
+
+.cold .leaf {
+  filter: hue-rotate(180deg);
+}
+
+.stormy .leaf {
+  animation: shake 0.3s infinite;
+}
+
+/* ================= RAIN ================= */
+.rain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  display: none;
+}
+
+body.rainy .rain {
+  display: block;
+}
+
+.drop {
+  position: absolute;
+  width: 2px;
+  height: 15px;
+  background: rgba(255,255,255,0.6);
+  animation: fall 1s linear infinite;
+}
+
+/* ================= CONTROLS ================= */
+.controls {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+select, button {
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: none;
+  font-size: 1rem;
+}
+
+button {
+  background: #00ffb3;
+  cursor: pointer;
+}
+
+/* ================= TEXT ================= */
+#compliment {
+  margin-top: 2rem;
+  font-size: clamp(1rem, 3vw, 1.3rem);
+  text-align: center;
+  max-width: 600px;
+  opacity: 0.95;
+}
+
+/* ================= FOOTER ================= */
+footer {
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  opacity: 0.6;
+}
+
+/* ================= ANIMATIONS ================= */
+@keyframes sway {
+  0%,100% { transform: rotate(0deg); }
+  50% { transform: rotate(4deg); }
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(-4px); }
+  100% { transform: translateX(4px); }
+}
+
+@keyframes fall {
+  from { transform: translateY(-20px); }
+  to { transform: translateY(100vh); }
+}
+</style>
+</head>
+
+<body>
+
+<!-- LANDING -->
+<section id="landing">
+  <h1>VerdantAI 🌿</h1>
+  <p>A calm plant that reacts to your weather</p>
+  <button id="startBtn">Enter Garden</button>
+</section>
+
+<!-- RAIN -->
+<div class="rain" id="rain"></div>
+
+<!-- APP -->
+<section id="app">
+  <div class="plant-container">
+    <div class="leaf left"></div>
+    <div class="leaf right"></div>
+    <div class="stem"></div>
+    <div class="pot"></div>
+  </div>
+
+  <div class="controls">
+    <select id="weather">
+      <option value="">Select Weather</option>
+      <option value="sunny">Sunny ☀️</option>
+      <option value="rainy">Rainy 🌧️</option>
+      <option value="cloudy">Cloudy ☁️</option>
+      <option value="cold">Cold ❄️</option>
+      <option value="stormy">Stormy ⛈️</option>
+    </select>
+    <button id="apply">Apply</button>
+  </div>
+
+  <div id="compliment"></div>
+  <footer>Built by Soujanya 🌱</footer>
+</section>
+
+<script>
+const startBtn = document.getElementById("startBtn");
+const landing = document.getElementById("landing");
+const app = document.getElementById("app");
+const weatherSelect = document.getElementById("weather");
+const complimentBox = document.getElementById("compliment");
+const rain = document.getElementById("rain");
+
+const compliments = {
+  sunny: ["You shine effortlessly ☀️", "Your energy lights everything 🌟"],
+  rainy: ["Growth loves patience 🌧️", "You bloom quietly 🌱"],
+  cloudy: ["Calm creates strength ☁️", "You’re steady and focused 🌿"],
+  cold: ["Resilience defines you ❄️", "You stay strong even now 💙"],
+  stormy: ["You stand tall in chaos ⛈️", "Strength lives within you 🌳"]
+};
+
+startBtn.onclick = () => {
+  landing.style.display = "none";
+  app.style.display = "flex";
+};
+
+document.getElementById("apply").onclick = () => {
+  const weather = weatherSelect.value;
+  if (!weather) return;
+
+  document.body.className = weather;
+
+  complimentBox.textContent =
+    compliments[weather][Math.floor(Math.random() * compliments[weather].length)];
+
+  localStorage.setItem("lastWeather", weather);
+};
+
+/* CREATE RAIN */
+for (let i = 0; i < 60; i++) {
+  const drop = document.createElement("div");
+  drop.className = "drop";
+  drop.style.left = Math.random() * 100 + "vw";
+  drop.style.animationDelay = Math.random() + "s";
+  rain.appendChild(drop);
+}
+
+/* MEMORY */
+const lastWeather = localStorage.getItem("lastWeather");
+if (lastWeather) weatherSelect.value = lastWeather;
+</script>
+
+</body>
+</html>
